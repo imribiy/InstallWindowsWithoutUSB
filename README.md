@@ -29,8 +29,12 @@ Steps
 6. Download Batch File from repository,  run it as admin and follow the directions in it.
 
 
+https://github.com/user-attachments/assets/afe5809e-0be3-49b2-839e-3518144f1ff3
+
 SCRIPT FAQ
 ==========
 
 Where can I find the drive letter for Windows? 
 > Use letter which you created in step 5.
+
+
