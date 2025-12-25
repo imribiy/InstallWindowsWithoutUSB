@@ -26,7 +26,7 @@ Steps
 ![Allocation](https://i.imgur.com/SsRkmXv.png)
 5. Find unallocated space, right click on it and select “New Simple Volume” and just always click next. 
 ![New Volume](https://i.imgur.com/CFQ7KSZ.png)
-6. Download Batch File from repository,  run it as admin and follow the directions in it.
+6. Download PowerShell script from repository,  run it as admin and follow the directions in it.
 
 
 
