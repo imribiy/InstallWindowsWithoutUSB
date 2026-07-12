@@ -93,15 +93,14 @@ function Get-AvailableDrives {
 }
 function Get-WindowsImageInfo($ImagePath) {
     # DISM PowerShell cmdlet: no process spawn, locale-independent
-    try { return @(Get-WindowsImage -ImagePath $ImagePath -EA Stop | Sort-Object ImageIndex | ForEach-Object { [PSCustomObject]@{Index=[int]$_.ImageIndex;Name=$_.ImageName} }) }
-    catch {
-        $imgs=@(); $idx=0
-        & dism.exe /Get-WimInfo /WimFile:"$ImagePath" 2>&1 | ForEach-Object {
-            if($_ -match "Index : (\d+)"){$idx=$matches[1]}
-            elseif($_ -match "Name : (.+)"){$imgs+=[PSCustomObject]@{Index=[int]$idx;Name=$matches[1].Trim()}}
-        }
-        return $imgs
+    try { $r=@(Get-WindowsImage -ImagePath $ImagePath -EA Stop | Sort-Object ImageIndex | ForEach-Object { [PSCustomObject]@{Index=[int]$_.ImageIndex;Name=$_.ImageName} }); if($r.Count -gt 0){return $r} } catch {}
+    $imgs=@(); $idx=0
+    & dism.exe /Get-WimInfo /WimFile:"$ImagePath" 2>&1 | ForEach-Object {
+        $l="$_".Trim()
+        if($l -match "^Index\s*:\s*(\d+)"){$idx=[int]$matches[1]}
+        elseif($l -match "^Name\s*:\s*(.+)"){$imgs+=[PSCustomObject]@{Index=$idx;Name=$matches[1].Trim()}}
     }
+    return $imgs
 }
 function Get-ImageFeaturesFromMount($MountPath) {
     $feats=@(); $inTbl=$false
@@ -489,7 +488,7 @@ $browseButton.Add_Click({
         $script:IsEsdImage = $script:TempImageFile -like "*.esd"
         $script:WindowsImages = Get-WindowsImageInfo $script:TempImageFile
         $script:WindowsImages | ForEach-Object { $editionComboBox.Items.Add("$($_.Index). $($_.Name)")|Out-Null }
-        if($editionComboBox.Items.Count -gt 0){$editionComboBox.SelectedIndex=0;$editionComboBox.Enabled=$true;$scanButton.Enabled=(-not $script:IsEsdImage)}
+        if($editionComboBox.Items.Count -gt 0){$editionComboBox.SelectedIndex=0;$editionComboBox.Enabled=$true;$scanButton.Enabled=$true}
         $unattendRoot = if($script:IsoDrive){"$($script:IsoDrive)\"}else{Join-Path $env:TEMP "WinInstallTemp"}
         $isoUnattend = Get-ChildItem $unattendRoot -Filter "*unattend*.xml" -Recurse -EA SilentlyContinue|Select-Object -First 1
         $script:IsoHasAutounattend = $isoUnattend -ne $null
